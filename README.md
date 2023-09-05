@@ -5,6 +5,7 @@
 ```bash
 $ npm install
 ```
+Создать файлы .env.production и .env.development на основе .env.example
 
 ## Запуск
 
