@@ -19,7 +19,7 @@ export interface UserCreationAttributes {
   id: number;
   userName: string;
   password: string;
-  createdAt: Date;
+  email: string;
 }
 
 @Table({ tableName: 'users', createdAt: true, updatedAt: false })

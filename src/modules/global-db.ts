@@ -10,9 +10,11 @@ import { Session } from '../session/models/session.model';
 import { VerifyCode } from '../user/models/verify-code.model';
 import { OrderCat } from '../order/models/order-cat.model';
 import { Order } from '../order/models/order.model';
+import { globalConfig } from './global-config';
 
 export const globalDb = [
   SequelizeModule.forRootAsync({
+    imports: [...globalConfig],
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => {
       return {
