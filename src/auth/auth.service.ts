@@ -5,6 +5,8 @@ import * as bcrypt from 'bcryptjs';
 import { User } from '../user/models/user.model';
 import { JwtService } from '@nestjs/jwt';
 import { SessionService } from '../session/session.service';
+import { AuthorizeUserDto } from './dto/authorize-user.dto';
+import { SessionDto } from '../session/dto/session.dto';
 
 @Injectable()
 export class AuthService {
@@ -22,9 +24,9 @@ export class AuthService {
       password: hashPassword,
     });
 
-    return this.generateTokens(user, dto.sessionName);
+    return this.sessionService.generateTokens(user, dto.sessionName);
   }
-  async authorize(dto: RegistrationDto) {
+  async authorize(dto: AuthorizeUserDto) {
     const hashPassword = await bcrypt.hash(dto.password, 5);
 
     const user = await this.userService.getByAuthInfo({
@@ -38,25 +40,10 @@ export class AuthService {
       });
     }
 
-    return this.generateTokens(user, dto.sessionName);
+    return this.sessionService.generateTokens(user, dto.sessionName);
   }
 
-  async generateTokens(user: User, sessionName: string) {
-    const accessPayload = {
-      id: user.id,
-      email: user.email,
-      userName: user.userName,
-      sessionName: sessionName,
-    };
-
-    const session = await this.sessionService.generateNewSession(
-      user.id,
-      sessionName,
-    );
-
-    return {
-      accessToken: this.jwtService.sign(accessPayload),
-      refreshToken: session.refreshToken,
-    };
+  async logout(dto: SessionDto, user: User) {
+    return this.sessionService.removeToken(dto, user);
   }
 }

@@ -1,4 +1,4 @@
 import { CreateUserDto } from '../../user/dto/create-user.dto';
-import { CreateSessionDto } from '../../session/dto/create-session.dto';
+import { SessionDto } from '../../session/dto/session.dto';
 
-export type RegistrationDto = CreateUserDto & CreateSessionDto;
+export type RegistrationDto = CreateUserDto & SessionDto;

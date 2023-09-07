@@ -1,6 +1,6 @@
-import { CreateSessionDto } from '../../session/dto/create-session.dto';
+import { SessionDto } from '../../session/dto/session.dto';
 
-export type AuthorizeUserDto = CreateSessionDto & {
+export type AuthorizeUserDto = SessionDto & {
   email: string;
   password: string;
 };

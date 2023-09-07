@@ -43,4 +43,12 @@ export class UserService {
       },
     });
   }
+
+  getById(id: number) {
+    return this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
 }
