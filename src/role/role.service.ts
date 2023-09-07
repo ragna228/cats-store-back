@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Role } from './models/role.model';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -17,7 +17,6 @@ export class RoleService {
       },
     });
   }
-
   async create(dto: CreateRoleDto) {
     return this.roleRepository.create({
       ...dto,
@@ -29,5 +28,17 @@ export class RoleService {
     return this.create({
       name: name,
     });
+  }
+
+  async getOrError(name: string) {
+    const candidate = await this.get(name);
+
+    if (!candidate) {
+      throw new BadRequestException({
+        message: 'Такой роли нет',
+      });
+    }
+
+    return candidate;
   }
 }

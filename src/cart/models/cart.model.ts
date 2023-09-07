@@ -15,7 +15,6 @@ import { User } from '../../user/models/user.model';
 export class CartCreationAttributes {
   id: number;
   userId: number;
-  createdAt: Date;
 }
 
 @Table({ tableName: 'carts', createdAt: true, updatedAt: false })

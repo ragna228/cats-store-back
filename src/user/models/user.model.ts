@@ -14,11 +14,28 @@ import { UserRole } from '../../role/models/user.role.model';
 import { Session } from '../../session/models/session.model';
 import { VerifyCode } from './verify-code.model';
 import { Order } from '../../order/models/order.model';
+import { ApiProperty } from '@nestjs/swagger';
 
-export interface UserCreationAttributes {
+export class UserCreationAttributes {
+  @ApiProperty({
+    example: 1,
+    description: 'Id',
+  })
   id: number;
+  @ApiProperty({
+    example: 'test',
+    description: 'Имя',
+  })
   userName: string;
+  @ApiProperty({
+    example: 'asd',
+    description: 'Пароль',
+  })
   password: string;
+  @ApiProperty({
+    example: 'test@gmail.com',
+    description: 'E-mail',
+  })
   email: string;
 }
 

@@ -1,9 +1,10 @@
 import { Controller } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CatService } from './cat.service';
 
-@ApiBearerAuth()
 @Controller('cat')
+@ApiTags('Коты')
+@ApiBearerAuth()
 export class CatController {
   constructor(private catService: CatService) {}
 }

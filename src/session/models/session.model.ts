@@ -7,13 +7,29 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { User } from '../../user/models/user.model';
+import { ApiProperty } from '@nestjs/swagger';
 
-export interface SessionCreationAttributes {
+export class SessionCreationAttributes {
+  @ApiProperty({
+    example: 1,
+    description: 'Id',
+  })
   id: number;
+  @ApiProperty({
+    example: 'asd',
+    description: 'Refresh токен',
+  })
   refreshToken: string;
+  @ApiProperty({
+    example: 'asd',
+    description: 'Имя сессии',
+  })
   name: string;
+  @ApiProperty({
+    example: 1,
+    description: 'Id пользователя',
+  })
   userId: number;
-  createdAt: Date;
 }
 
 @Table({ tableName: 'sessions', createdAt: true, updatedAt: false })

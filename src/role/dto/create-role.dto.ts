@@ -1,3 +1,4 @@
 import { RoleCreationAttributes } from '../models/role.model';
+import { OmitType } from '@nestjs/swagger';
 
-export type CreateRoleDto = Omit<RoleCreationAttributes, 'id'>;
+export class CreateRoleDto extends OmitType(RoleCreationAttributes, ['id']) {}

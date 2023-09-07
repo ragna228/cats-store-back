@@ -9,6 +9,7 @@ import { CartCat } from '../../cart/models/cart-cat.model';
 import { Cart } from '../../cart/models/cart.model';
 import { OrderCat } from '../../order/models/order-cat.model';
 import { Order } from '../../order/models/order.model';
+import { ApiProperty } from '@nestjs/swagger';
 
 export enum Gender {
   MAN = 'man',
@@ -21,16 +22,56 @@ export enum CatStatus {
   SOLD = 'sold',
   DELETED = 'deleted',
 }
-export interface CatCreationAttributes {
+export class CatCreationAttributes {
+  @ApiProperty({
+    example: 1,
+    description: 'Id',
+  })
   id: number;
+  @ApiProperty({
+    example: 'asd',
+    description: 'Имя',
+  })
   name: string;
+  @ApiProperty({
+    example: 100,
+    description: 'Цена',
+  })
   price: number;
+  @ApiProperty({
+    example: ['img.png'],
+    description: 'Изображения',
+  })
   images: string[];
+  @ApiProperty({
+    example: Gender.MAN,
+    description: 'Гендер кота',
+  })
   gender: Gender;
+  @ApiProperty({
+    example: 10,
+    description: 'Возраст',
+  })
   age: number;
-  colors: string[];
+  @ApiProperty({
+    example: 'asd',
+    description: 'Цвет',
+  })
+  colors: string;
+  @ApiProperty({
+    example: ['Цвет'],
+    description: 'Особенности',
+  })
   features: string[];
+  @ApiProperty({
+    example: CatStatus.SOLD,
+    description: 'Статус кота',
+  })
   status: CatStatus;
+  @ApiProperty({
+    example: true,
+    description: 'Рекомендован',
+  })
   isRecommended: boolean;
 }
 
@@ -69,10 +110,10 @@ export class Cat extends Model<CatCreationAttributes> {
   gender: Gender;
 
   @Column({
-    type: DataType.ARRAY(DataType.STRING),
+    type: DataType.STRING,
     allowNull: false,
   })
-  colors: string[];
+  colors: string;
 
   @Column({
     type: DataType.ARRAY(DataType.STRING),

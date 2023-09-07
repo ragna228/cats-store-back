@@ -4,8 +4,9 @@ import { Session } from './models/session.model';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/models/user.model';
 import { SessionDto } from './dto/session.dto';
-import { RefreshTokenDto } from '../auth/dto/refresh-token.dto';
 import { UserService } from '../user/user.service';
+import { TokensDto } from '../auth/dto/tokens.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Injectable()
 export class SessionService {
@@ -14,7 +15,7 @@ export class SessionService {
     private jwtService: JwtService,
     private userService: UserService,
   ) {}
-  async generateTokens(user: User, sessionName: string) {
+  async generateTokens(user: User, sessionName: string): Promise<TokensDto> {
     const { refreshToken } = await this.createNew(user.id, sessionName);
     const { accessToken } = this.generateAccessToken(user, sessionName);
 
@@ -32,7 +33,6 @@ export class SessionService {
     };
     return { accessToken: this.jwtService.sign(accessPayload) };
   }
-
   async refreshToken(dto: RefreshTokenDto) {
     const currentSession = await this.getByRefreshToken(dto.refreshToken);
 
@@ -48,7 +48,6 @@ export class SessionService {
 
     return this.generateAccessToken(user, name);
   }
-
   async createNew(userId: number, sessionName: string) {
     const refreshPayload = {
       id: userId,
@@ -68,7 +67,6 @@ export class SessionService {
       },
     });
   }
-
   async removeToken(dto: SessionDto, user: User) {
     const count = await this.sessionRepository.destroy({
       where: {
