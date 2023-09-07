@@ -1,3 +1,3 @@
-import { UserCreationAttributes } from '../../user/models/user.model';
+import { CreateUserDto } from '../../user/dto/create-user.dto';
 
-export type RegistrationDto = Omit<UserCreationAttributes, 'id'>;
+export type RegistrationDto = CreateUserDto;

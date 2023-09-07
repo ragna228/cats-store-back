@@ -6,5 +6,9 @@ import { RegistrationDto } from './dto/registration-dto';
 export class AuthService {
   constructor(private userService: UserService) {}
 
-  async registration(dto: RegistrationDto) {}
+  async registration(dto: RegistrationDto) {
+    this.userService.create({
+      ...dto,
+    });
+  }
 }

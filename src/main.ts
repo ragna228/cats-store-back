@@ -3,13 +3,11 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as process from 'process';
-import { GraphModule } from 'nestjs-graph';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const PORT = process.env.APP_PORT || 5555;
   const DOCS_URL = process.env.DOCS_URL || '/api/docs';
-  const GRAPH_URL = process.env.GRAPH_URL || '/graph';
   const APP_URL = `http://localhost:${PORT}`;
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -24,15 +22,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(DOCS_URL, app, document);
 
-  new GraphModule(app).serve(GRAPH_URL, app.getHttpAdapter());
-
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({ credentials: true, origin: true });
 
   await app.listen(PORT, () => {
     console.log(`App started on url: ${APP_URL}`);
     console.log(`docs on ${APP_URL}${DOCS_URL}`);
-    console.log(`Graph dependencies on: ${APP_URL}${GRAPH_URL}`);
   });
 }
 bootstrap();
