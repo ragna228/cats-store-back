@@ -6,7 +6,7 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { User } from '../user/user.model';
+import { User } from '../../user/models/user.model';
 
 export interface SessionCreationAttributes {
   id: number;

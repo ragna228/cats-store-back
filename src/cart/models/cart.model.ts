@@ -7,11 +7,12 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { User } from '../user/user.model';
-import { Cat } from '../cat/cat.model';
-import { CartCat } from './cart-cat.model';
 
-export interface CartCreationAttributes {
+import { CartCat } from './cart-cat.model';
+import { Cat } from '../../cat/models/cat.model';
+import { User } from '../../user/models/user.model';
+
+export class CartCreationAttributes {
   id: number;
   userId: number;
   createdAt: Date;

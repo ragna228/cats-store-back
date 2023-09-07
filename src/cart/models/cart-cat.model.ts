@@ -7,7 +7,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Cart } from './cart.model';
-import { Cat } from '../cat/cat.model';
+import { Cat } from '../../cat/models/cat.model';
 
 @Table({ tableName: 'cart-cat', createdAt: false, updatedAt: false })
 export class CartCat extends Model<CartCat> {
