@@ -7,12 +7,8 @@ import { CreateRoleDto } from './dto/create-role.dto';
 export class RoleService {
   constructor(@InjectModel(Role) private roleRepository: typeof Role) {}
 
-  async getOrCreate(name: string) {
-    const candidate = await this.get(name);
-    if (candidate) return candidate;
-    return this.create({
-      name: name,
-    });
+  async getAll() {
+    return this.roleRepository.findAll();
   }
   async get(name: string) {
     return this.roleRepository.findOne({
@@ -25,6 +21,13 @@ export class RoleService {
   async create(dto: CreateRoleDto) {
     return this.roleRepository.create({
       ...dto,
+    });
+  }
+  async getOrCreate(name: string) {
+    const candidate = await this.get(name);
+    if (candidate) return candidate;
+    return this.create({
+      name: name,
     });
   }
 }
