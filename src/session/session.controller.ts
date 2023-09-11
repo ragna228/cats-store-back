@@ -1,8 +1,6 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { SessionService } from './session.service';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../utils/gurads/user.guard';
-import { GetUser } from '../utils/decorators/user.decorator';
-import { User } from '../user/models/user.model';
+import { GetPayload } from '../utils/decorators/user.decorator';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -12,12 +10,15 @@ import {
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ErrorType } from '../utils/errors/error.type';
 import { SessionDto } from './dto/session.dto';
+import { ISessionService } from '../utils/serivces/i-session.service';
+import { InfoTokenDto } from '../utils/info-token.dto';
+import { Session } from './models/session.model';
 
 @ApiTags('Сессии')
 @ApiBearerAuth()
 @Controller('session')
 export class SessionController {
-  constructor(private sessionService: SessionService) {}
+  constructor(private sessionService: ISessionService) {}
 
   @ApiOperation({ summary: 'Обновить токен' })
   @ApiResponse({ status: 201 })
@@ -32,7 +33,16 @@ export class SessionController {
   @ApiResponse({ status: 400, type: ErrorType })
   @UseGuards(RolesGuard)
   @Post('/remove')
-  async remove(@Body() dto: SessionDto, @GetUser() user: User) {
-    return this.sessionService.removeToken(dto, user);
+  async remove(@Body() dto: SessionDto, @GetPayload() payload: InfoTokenDto) {
+    return this.sessionService.removeToken(payload.id, dto.sessionName);
+  }
+
+  @ApiOperation({ summary: 'Информация о сессиях' })
+  @ApiResponse({ status: 201, type: [Session] })
+  @ApiResponse({ status: 400, type: ErrorType })
+  @UseGuards(RolesGuard)
+  @Get('/')
+  async list(@GetPayload() payload: InfoTokenDto) {
+    return this.sessionService.getUserSessions(payload.id);
   }
 }

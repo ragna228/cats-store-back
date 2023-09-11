@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ErrorType {
-  @ApiProperty({})
+  @ApiProperty({
+    example: 'Ошибка',
+    description: 'Ошибка',
+  })
   message: string;
 }

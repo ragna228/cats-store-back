@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
@@ -16,6 +17,9 @@ import {
 } from '../decorators/auth.decorator';
 import { Role } from '../../role/models/role.model';
 import { User } from '../../user/models/user.model';
+import { Session } from '../../session/models/session.model';
+import { tryVerify } from '../extentions/jwt.extention';
+import { InfoTokenDto } from '../info-token.dto';
 
 interface GuardConfiguration {
   requiredRoles: string[];
@@ -61,18 +65,20 @@ export class RolesGuard implements CanActivate {
         message: 'Формат токена не совпадает',
       });
 
-    const id: number = this.jwtService.decode(token)['id'];
+    const decoded = tryVerify<InfoTokenDto>(token, this.jwtService);
 
-    console.log(id);
-
-    if (id == undefined)
+    if (!decoded)
       throw new UnauthorizedException({
         message: 'Формат токена не совпадает',
       });
 
+    req.payload = decoded;
+
+    const { sessionId, id } = decoded;
+
     const user: User = await this.userRepository.findOne({
       where: { id: id },
-      include: [Role],
+      include: [Role, Session],
     });
 
     if (!user) {
@@ -81,18 +87,29 @@ export class RolesGuard implements CanActivate {
       });
     }
 
-    if (!isSkipEmail && !user.verifyId) {
+    if (!user.sessions.find((e) => e.id == sessionId)) {
+      throw new BadRequestException({
+        message: 'Сессия уже завершена',
+      });
+    }
+
+    if (!isSkipEmail && user.verifyId) {
       throw new UnauthorizedException({
         message: 'Аккаунт не подтвержден',
       });
     }
 
-    if (!user.roles.some((role) => requiredRoles.includes(role.name))) {
+    req.user = user;
+
+    if (
+      requiredRoles.length != 0 &&
+      !user.roles.some((role) => requiredRoles.includes(role.name))
+    ) {
       throw new UnauthorizedException({
         message: 'У вас нет нужных ролей',
       });
     }
-    req.user = user;
+
     return true;
   }
 }

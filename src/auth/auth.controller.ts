@@ -5,21 +5,20 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthService } from './auth.service';
 import { RegistrationDto } from './dto/registration-dto';
 import { AuthorizeUserDto } from './dto/authorize-user.dto';
 import { RolesGuard } from '../utils/gurads/user.guard';
-import { GetUser } from '../utils/decorators/user.decorator';
-import { User } from '../user/models/user.model';
-import { SessionDto } from '../session/dto/session.dto';
+import { GetPayload } from '../utils/decorators/user.decorator';
 import { TokensDto } from './dto/tokens.dto';
 import { ErrorType } from '../utils/errors/error.type';
+import { IAuthService } from '../utils/serivces/i-auth.service';
+import { InfoTokenDto } from '../utils/info-token.dto';
 
 @ApiBearerAuth()
 @ApiTags('Авторизация')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: IAuthService) {}
 
   @ApiOperation({ summary: 'Регистрация пользователя' })
   @ApiResponse({ status: 201, type: TokensDto })
@@ -42,7 +41,7 @@ export class AuthController {
   @ApiResponse({ status: 400, type: ErrorType })
   @UseGuards(RolesGuard)
   @Post('/logout')
-  async logout(@Body() dto: SessionDto, @GetUser() user: User) {
-    return this.authService.logout(dto, user);
+  async logout(@GetPayload() payload: InfoTokenDto) {
+    return this.authService.logout(payload.id, payload.sessionName);
   }
 }

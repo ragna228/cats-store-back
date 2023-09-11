@@ -14,7 +14,7 @@ import { UserRole } from '../../role/models/user.role.model';
 import { Session } from '../../session/models/session.model';
 import { VerifyCode } from './verify-code.model';
 import { Order } from '../../order/models/order.model';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UserCreationAttributes {
   @ApiProperty({
@@ -37,6 +37,24 @@ export class UserCreationAttributes {
     description: 'E-mail',
   })
   email: string;
+
+  @ApiProperty({
+    example: [],
+    description: 'Роли',
+  })
+  roles: Role[];
+
+  @ApiProperty({
+    example: [],
+    description: 'Сессии',
+  })
+  sessions: Session[];
+
+  @ApiPropertyOptional({
+    example: 1,
+    description: 'Id верификации',
+  })
+  verifyId?: number;
 }
 
 @Table({ tableName: 'users', createdAt: true, updatedAt: false })

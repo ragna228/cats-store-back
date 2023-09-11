@@ -1,12 +1,8 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Gender } from '../models/cat.model';
+import { RowDto } from '../../utils/row.dto';
 
-export class SearchCatDto {
-  @ApiProperty({
-    example: 1,
-    description: 'Страница',
-  })
-  row: number;
+export class FilterCatDto extends RowDto {
   @ApiPropertyOptional({
     example: 'a',
     description: 'Запрос',

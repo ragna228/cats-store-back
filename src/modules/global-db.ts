@@ -40,5 +40,5 @@ export const globalDb = [
       };
     },
   }),
-  SequelizeModule.forFeature([User, UserRole, Role]),
+  SequelizeModule.forFeature([User, UserRole, Role, Session]),
 ];

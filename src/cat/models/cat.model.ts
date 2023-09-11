@@ -57,7 +57,7 @@ export class CatCreationAttributes {
     example: 'asd',
     description: 'Цвет',
   })
-  colors: string;
+  color: string;
   @ApiProperty({
     example: ['Цвет'],
     description: 'Особенности',
@@ -113,7 +113,7 @@ export class Cat extends Model<CatCreationAttributes> {
     type: DataType.STRING,
     allowNull: false,
   })
-  colors: string;
+  color: string;
 
   @Column({
     type: DataType.ARRAY(DataType.STRING),

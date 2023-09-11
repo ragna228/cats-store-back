@@ -3,37 +3,45 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Session } from './models/session.model';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/models/user.model';
-import { SessionDto } from './dto/session.dto';
-import { UserService } from '../user/user.service';
 import { TokensDto } from '../auth/dto/tokens.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { IUserService } from '../utils/serivces/i-user.service';
+import { ISessionService } from '../utils/serivces/i-session.service';
+import { AccessTokenDto } from './dto/access-token.dto';
+import { InfoTokenDto } from '../utils/info-token.dto';
 
 @Injectable()
-export class SessionService {
+export class SessionService extends ISessionService {
   constructor(
     @InjectModel(Session) private sessionRepository: typeof Session,
     private jwtService: JwtService,
-    private userService: UserService,
-  ) {}
+    private userService: IUserService,
+  ) {
+    super();
+  }
   async generateTokens(user: User, sessionName: string): Promise<TokensDto> {
-    const { refreshToken } = await this.createNew(user.id, sessionName);
-    const { accessToken } = this.generateAccessToken(user, sessionName);
+    const session = await this.createNew(user.id, sessionName);
+    const { accessToken } = await this.generateAccessToken(user, session);
 
     return {
       accessToken: accessToken,
-      refreshToken: refreshToken,
+      refreshToken: session.refreshToken,
     };
   }
-  generateAccessToken(user: User, sessionName: string) {
-    const accessPayload = {
+  async generateAccessToken(
+    user: User,
+    session: Session,
+  ): Promise<AccessTokenDto> {
+    const accessPayload: InfoTokenDto = {
       id: user.id,
       email: user.email,
       userName: user.userName,
-      sessionName: sessionName,
+      sessionName: session.name,
+      sessionId: session.id,
     };
     return { accessToken: this.jwtService.sign(accessPayload) };
   }
-  async refreshToken(dto: RefreshTokenDto) {
+  async refreshToken(dto: RefreshTokenDto): Promise<AccessTokenDto> {
     const currentSession = await this.getByRefreshToken(dto.refreshToken);
 
     if (!currentSession) {
@@ -42,13 +50,26 @@ export class SessionService {
       });
     }
 
-    const { userId, name } = currentSession;
+    const user = await this.userService.getById(currentSession.userId);
 
-    const user = await this.userService.getById(userId);
-
-    return this.generateAccessToken(user, name);
+    return this.generateAccessToken(user, currentSession);
   }
-  async createNew(userId: number, sessionName: string) {
+  async createNew(userId: number, sessionName: string): Promise<Session> {
+    const candidate = await this.sessionRepository.findOne({
+      where: {
+        userId: userId,
+        name: sessionName,
+      },
+    });
+
+    console.log(candidate);
+
+    if (candidate) {
+      throw new BadRequestException({
+        message: 'Такая сессия уже существует',
+      });
+    }
+
     const refreshPayload = {
       id: userId,
       sessionName: sessionName,
@@ -57,26 +78,39 @@ export class SessionService {
     return this.sessionRepository.create({
       userId: userId,
       name: sessionName,
-      refreshToken: this.jwtService.sign(refreshPayload),
+      refreshToken: this.jwtService.sign(refreshPayload, {
+        expiresIn: '10d',
+      }),
     });
   }
-  async getByRefreshToken(token: string) {
+  async getByRefreshToken(token: string): Promise<Session> {
     return this.sessionRepository.findOne({
       where: {
         refreshToken: token,
       },
     });
   }
-  async removeToken(dto: SessionDto, user: User) {
+  async removeToken(userId: number, sessionName: string) {
     const count = await this.sessionRepository.destroy({
       where: {
-        name: dto.sessionName,
-        userId: user.id,
+        name: sessionName,
+        userId: userId,
       },
     });
 
     return {
       success: count == 1,
     };
+  }
+
+  async getUserSessions(userId: number): Promise<Session[]> {
+    return this.sessionRepository.findAll({
+      where: {
+        userId: userId,
+      },
+      attributes: {
+        exclude: ['refreshToken', 'userId'],
+      },
+    });
   }
 }
