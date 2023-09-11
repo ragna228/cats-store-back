@@ -29,15 +29,15 @@ export class FilterCatDto extends RowDto {
   })
   maxPrice?: number;
   @ApiPropertyOptional({
-    example: [Gender.MAN],
+    example: Gender.MAN,
     description: 'Нужные полы',
   })
-  genders?: Gender[];
+  gender?: Gender;
   @ApiPropertyOptional({
     example: 'red',
     description: 'Возможный цвет',
   })
-  colors?: string;
+  color?: string;
   @ApiPropertyOptional({
     example: false,
     description: 'Рекомендован',

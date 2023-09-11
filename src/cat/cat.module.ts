@@ -4,9 +4,10 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { Cat } from './models/cat.model';
 import { CatService } from './cat.service';
 import { ICatService } from '../utils/serivces/i-cat.service';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Cat])],
+  imports: [SequelizeModule.forFeature([Cat]), MulterModule],
   controllers: [CatController],
   providers: [
     {

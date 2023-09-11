@@ -1,4 +1,11 @@
-import { Attributes, FindOptions, Op, Order, WhereOptions } from 'sequelize';
+import {
+  Attributes,
+  FindOptions,
+  Op,
+  Order,
+  WhereAttributeHashValue,
+  WhereOptions,
+} from 'sequelize';
 import { Model } from 'sequelize-typescript';
 
 export const rowed = <T extends Model>(
@@ -21,7 +28,7 @@ export const filteredFields = <T extends Model>(
   options: WhereOptions<T> = {},
 ): WhereOptions<T> => {
   const search = [];
-  const query = `%${q}%`;
+  const query = `%${q ? q : ''}%`;
 
   for (const key of keys) {
     search.push({
@@ -35,4 +42,23 @@ export const filteredFields = <T extends Model>(
     ...options,
     [Op.or]: search,
   };
+};
+
+export const minMaxFilter = (
+  min?: number,
+  max?: number,
+  defaultMin = 0,
+  defaultMax = 100000,
+): WhereAttributeHashValue<number> => {
+  return {
+    [Op.gte]: min ? min : defaultMin,
+    [Op.lte]: max ? max : defaultMax,
+  };
+};
+
+export const isValueOrDefault = <T extends Model>(
+  key: keyof T,
+  value: any | undefined,
+): WhereAttributeHashValue<any> => {
+  return value ? { [key]: value } : undefined;
 };

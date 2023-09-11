@@ -76,6 +76,7 @@ export class UserService extends IUserService {
     };
   }
   search(dto: FilterUserDto): Promise<User[]> {
+    console.log(dto);
     return this.userRepository.findAll(
       rowed<User>(dto.row, {
         where: filteredFields<User>(['email', 'userName'], dto.q),

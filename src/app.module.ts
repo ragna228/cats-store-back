@@ -10,6 +10,8 @@ import { CartModule } from './cart/cart.module';
 import { RoleModule } from './role/role.module';
 import { OrderModule } from './order/order.module';
 import { AuthModule } from './auth/auth.module';
+import { globalMulter } from './modules/global-multer';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Global()
 @Module({
@@ -17,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
     ...globalDb,
     ...globalJwt,
     ...globalRedis,
+    ...globalMulter,
     CatModule,
     SessionModule,
     UserModule,
@@ -27,6 +30,6 @@ import { AuthModule } from './auth/auth.module';
   ],
   controllers: [],
   providers: [],
-  exports: [SequelizeModule],
+  exports: [SequelizeModule, MulterModule],
 })
 export class AppModule {}
