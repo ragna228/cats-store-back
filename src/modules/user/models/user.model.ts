@@ -1,4 +1,5 @@
 import {
+  BelongsTo,
   BelongsToMany,
   Column,
   DataType,
@@ -94,7 +95,7 @@ export class User extends Model<UserCreationAttributes> {
   })
   verifyId?: number;
 
-  @HasOne(() => VerifyCode, 'verifyId')
+  @BelongsTo(() => VerifyCode, 'verifyId')
   verifyCode?: VerifyCode;
 
   @HasMany(() => Order, 'userId')

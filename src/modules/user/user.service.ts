@@ -11,10 +11,19 @@ import {
   filteredFields,
   rowed,
 } from '../../utils/extentions/shared.extentions';
+import { SuccessOperationDto } from '../../utils/success-operation.dto';
+import { VerifyDto } from './dto/verify-dto';
+import { MailerService } from '@nestjs-modules/mailer';
+import { getMailerConfig } from '../../utils/extentions/mailer.extentions';
+import { VerifyCode } from './models/verify-code.model';
 
 @Injectable()
 export class UserService extends IUserService {
-  constructor(@InjectModel(User) private userRepository: typeof User) {
+  constructor(
+    @InjectModel(User) private userRepository: typeof User,
+    @InjectModel(VerifyCode) private codeRepository: typeof VerifyCode,
+    private mailerService: MailerService,
+  ) {
     super();
   }
 
@@ -80,5 +89,66 @@ export class UserService extends IUserService {
         include: [this._getRoleInclude(dto.roleIds)],
       }),
     );
+  }
+
+  async resend(id: number): Promise<SuccessOperationDto> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+      include: [VerifyCode],
+    });
+    if (!user.verifyCode) {
+      throw new BadRequestException({
+        message: 'Код уже введен',
+      });
+    }
+    try {
+      await this.mailerService.sendMail(
+        getMailerConfig(user.email, user.verifyCode.code),
+      );
+    } catch (e) {
+      throw new BadRequestException({
+        message: 'Почты не существует',
+      });
+    }
+    return { success: true };
+  }
+
+  async verify(dto: VerifyDto, id: number): Promise<SuccessOperationDto> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+      include: [VerifyCode],
+    });
+    if (!user.verifyCode) {
+      throw new BadRequestException({
+        message: 'Код уже введен',
+      });
+    }
+    if (user.verifyCode.code != dto.code) {
+      throw new BadRequestException({
+        message: 'Код не совпадает',
+      });
+    }
+    const verifyId = user.verifyId;
+
+    await this.userRepository.update(
+      {
+        verifyId: null,
+      },
+      {
+        where: {
+          id: user.id,
+        },
+      },
+    );
+    await this.codeRepository.destroy({
+      where: {
+        id: verifyId,
+      },
+    });
+    return { success: true };
   }
 }

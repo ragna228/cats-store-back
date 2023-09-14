@@ -1,10 +1,4 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
 import { User } from './user.model';
 
 @Table({ tableName: 'verify-code', createdAt: false, updatedAt: false })
@@ -17,6 +11,6 @@ export class VerifyCode extends Model<VerifyCode> {
   })
   code: number;
 
-  @BelongsTo(() => User, 'verifyId')
+  @HasMany(() => User, 'verifyId')
   user: User;
 }

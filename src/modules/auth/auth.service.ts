@@ -7,13 +7,18 @@ import { User } from '../user/models/user.model';
 import { Role } from '../role/models/role.model';
 import { AuthorizeUserDto } from './dto/authorize-user.dto';
 import { SessionManagerService } from '../extra/session/session-manager.service';
+import { VerifyCode } from '../user/models/verify-code.model';
+import { MailerService } from '@nestjs-modules/mailer';
+import { getMailerConfig } from '../../utils/extentions/mailer.extentions';
 
 @Injectable()
 export class AuthService extends IAuthService {
   constructor(
     @InjectModel(User) private userRepository: typeof User,
     @InjectModel(Role) private roleRepository: typeof Role,
+    @InjectModel(VerifyCode) private codeRepository: typeof VerifyCode,
     private sessionManagerService: SessionManagerService,
+    private mailerService: MailerService,
   ) {
     super();
   }
@@ -37,7 +42,25 @@ export class AuthService extends IAuthService {
       where: { name: 'USER' },
     });
 
+    const code = await this.codeRepository.create({
+      code: 1000 + Math.floor(Math.random() * 8999),
+    });
+
+    try {
+      await this.mailerService.sendMail(getMailerConfig(dto.email, code.code));
+    } catch (e) {
+      await this.codeRepository.destroy({
+        where: {
+          id: code.id,
+        },
+      });
+      throw new BadRequestException({
+        message: 'Такой почты не сущетсвует',
+      });
+    }
+
     const user = await this.userRepository.create({
+      verifyId: code.id,
       userName: dto.userName,
       email: dto.email,
       password: hashPassword,
