@@ -1,32 +1,19 @@
 import { Global, Module } from '@nestjs/common';
-import { globalDb } from './modules/global-db';
-import { globalJwt } from './modules/global-jwt';
-import { globalRedis } from './modules/global-redis';
-import { CatModule } from './cat/cat.module';
-import { SessionModule } from './session/session.module';
-import { UserModule } from './user/user.module';
+import { globalDb } from './global/global-db';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { CartModule } from './cart/cart.module';
-import { RoleModule } from './role/role.module';
-import { OrderModule } from './order/order.module';
-import { AuthModule } from './auth/auth.module';
-import { globalMulter } from './modules/global-multer';
+import { globalMulter } from './global/global-multer';
 import { MulterModule } from '@nestjs/platform-express';
+import { allModules, extraModules } from './modules/info';
+import { globalConfig } from './global/global-config';
 
 @Global()
 @Module({
   imports: [
+    ...globalConfig,
     ...globalDb,
-    ...globalJwt,
-    ...globalRedis,
     ...globalMulter,
-    CatModule,
-    SessionModule,
-    UserModule,
-    CartModule,
-    RoleModule,
-    OrderModule,
-    AuthModule,
+    ...allModules,
+    ...extraModules,
   ],
   controllers: [],
   providers: [],

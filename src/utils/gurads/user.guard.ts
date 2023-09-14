@@ -6,20 +6,19 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { InjectModel } from '@nestjs/sequelize';
-import { UserRole } from '../../role/models/user.role.model';
 import {
   REQUIRE_AUTH,
   ROLES_KEY,
   SKIP_EMAIL,
 } from '../decorators/auth.decorator';
-import { Role } from '../../role/models/role.model';
-import { User } from '../../user/models/user.model';
-import { Session } from '../../session/models/session.model';
-import { tryVerify } from '../extentions/jwt.extention';
-import { InfoTokenDto } from '../info-token.dto';
+import { UserRole } from '../../modules/role/models/user.role.model';
+import { User } from '../../modules/user/models/user.model';
+import { Role } from '../../modules/role/models/role.model';
+import { Session } from '../../modules/session/models/session.model';
+import { JwtService } from '../../modules/extra/jwt/jwt.service';
+import { AccessTokenDto } from '../../modules/extra/jwt/access-token.dto';
 
 interface GuardConfiguration {
   requiredRoles: string[];
@@ -65,7 +64,10 @@ export class RolesGuard implements CanActivate {
         message: 'Формат токена не совпадает',
       });
 
-    const decoded = tryVerify<InfoTokenDto>(token, this.jwtService);
+    const decoded: AccessTokenDto = this.jwtService.decode<AccessTokenDto>(
+      token,
+      'access',
+    );
 
     if (!decoded)
       throw new UnauthorizedException({
