@@ -10,6 +10,7 @@ import { SessionManagerService } from '../extra/session/session-manager.service'
 import { VerifyCode } from '../user/models/verify-code.model';
 import { MailerService } from '@nestjs-modules/mailer';
 import { getMailerConfig } from '../../utils/extentions/mailer.extentions';
+import { Cart } from '../cart/models/cart.model';
 
 @Injectable()
 export class AuthService extends IAuthService {
@@ -17,6 +18,7 @@ export class AuthService extends IAuthService {
     @InjectModel(User) private userRepository: typeof User,
     @InjectModel(Role) private roleRepository: typeof Role,
     @InjectModel(VerifyCode) private codeRepository: typeof VerifyCode,
+    @InjectModel(Cart) private cartRepository: typeof Cart,
     private sessionManagerService: SessionManagerService,
     private mailerService: MailerService,
   ) {
@@ -65,6 +67,10 @@ export class AuthService extends IAuthService {
       email: dto.email,
       password: hashPassword,
       roles: [startRole],
+    });
+
+    await this.cartRepository.create({
+      userId: user.id,
     });
 
     return this.sessionManagerService.createOrUpdateSession(

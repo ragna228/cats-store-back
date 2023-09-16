@@ -6,12 +6,13 @@ import { SessionManagerModule } from '../extra/session/session-manager.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { VerifyCode } from '../user/models/verify-code.model';
+import { Cart } from '../cart/models/cart.model';
 
 @Module({
   imports: [
     SessionManagerModule,
     MailerModule,
-    SequelizeModule.forFeature([VerifyCode]),
+    SequelizeModule.forFeature([VerifyCode, Cart]),
   ],
   controllers: [AuthController],
   providers: [

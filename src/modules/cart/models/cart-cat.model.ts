@@ -1,8 +1,8 @@
 import {
+  BelongsTo,
   Column,
   DataType,
   ForeignKey,
-  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
@@ -27,9 +27,9 @@ export class CartCat extends Model<CartCat> {
   })
   catId: number;
 
-  @HasOne(() => Cart, 'cartId')
+  @BelongsTo(() => Cart, 'cartId')
   cart: Cart;
 
-  @HasOne(() => Cat, 'catId')
+  @BelongsTo(() => Cat, 'catId')
   cat: Cat;
 }

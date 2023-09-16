@@ -7,9 +7,9 @@ import {
 } from 'sequelize-typescript';
 import { CartCat } from '../../cart/models/cart-cat.model';
 import { Cart } from '../../cart/models/cart.model';
-import { OrderCat } from '../../order/models/order-cat.model';
-import { Order } from '../../order/models/order.model';
 import { ApiProperty } from '@nestjs/swagger';
+import { Order } from '../../order/models/order.model';
+import { OrderCat } from '../../order/models/order-cat.model';
 
 export enum Gender {
   MAN = 'man',

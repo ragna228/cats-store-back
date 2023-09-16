@@ -101,10 +101,9 @@ export class CatService extends ICatService {
         status: status,
       },
       {
-        where: {
-          status: CatStatus.SHOWED,
+        where: availableCats({
           id: id,
-        },
+        }),
       },
     );
 
