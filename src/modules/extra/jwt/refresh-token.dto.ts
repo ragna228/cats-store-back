@@ -1,4 +1,4 @@
-
 export interface RefreshTokenDto {
-    id: number;
+  id: number;
+  sessionName: string;
 }

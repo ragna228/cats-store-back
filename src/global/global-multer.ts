@@ -19,6 +19,21 @@ export const globalMulter = [
               .at(-1)}`;
             file.filename = fileName;
 
+            const castedRequest = req as { body: NonNullable<unknown> };
+
+            const result: string | string[] | undefined =
+              castedRequest.body[file.fieldname];
+
+            if (!result) {
+              castedRequest.body[file.fieldname] = fileName;
+            } else {
+              if (Array.isArray(result)) {
+                result.push(fileName);
+              } else {
+                castedRequest.body[file.fieldname] = [result, fileName];
+              }
+            }
+
             callback(null, fileName);
           },
         }),

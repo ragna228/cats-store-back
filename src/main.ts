@@ -4,7 +4,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as process from 'process';
 import { ValidationPipe } from '@nestjs/common';
-import { join } from 'path';
 
 async function bootstrap() {
   const PORT = process.env.APP_PORT || 5555;
@@ -25,8 +24,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({ credentials: true, origin: true });
-
-  app.useStaticAssets(join(__dirname, '../images'), {});
 
   await app.listen(PORT, () => {
     console.log(`App started on url: ${APP_URL}`);

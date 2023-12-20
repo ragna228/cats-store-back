@@ -3,5 +3,5 @@ import { UserCreationAttributes } from '../models/user.model';
 
 export class UpdateUserDto extends OmitType(
   PartialType(UserCreationAttributes),
-  ['id', 'email'],
+  ['sessions', 'id', 'verifyId', 'email'],
 ) {}
